@@ -1,0 +1,157 @@
+# Solana Arbitrage Bot Configuration
+
+[wallet]
+# Path to your Solana keypair file
+keypair_path = "~/.config/solana/id.json"
+
+[rpc]
+# Standard RPC endpoint for queries (get_account, get_balance, etc.)
+# Use a reliable RPC provider (Helius, Triton, QuickNode, etc.)
+# DO NOT use Astralane endpoint here - it's only for transaction submission
+endpoint = "https://api.mainnet-beta.solana.com"
+# Request timeout in seconds
+timeout_secs = 30
+
+[pools]
+# Up to 5 pool addresses (PumpSwap, DLMM, DAMM V2, or CPMM only)
+# Add 2-5 pool addresses below
+addresses = [
+    "POOL_ADDRESS_1",
+    "POOL_ADDRESS_2",
+]
+# Additional pools (copy and add to array above):
+# "POOL_ADDRESS_3"
+# "POOL_ADDRESS_4"
+# "POOL_ADDRESS_5"
+# The token you're arbitraging
+target_token = "TOKEN_MINT_ADDRESS"
+
+[limits]
+# Stop after this many trades
+max_trade_count = 1000
+# Maximum SOL to spend per trade
+max_buy_amount_sol = 0.5
+# Stop and emergency sell if losses exceed this
+max_loss_sol = 2.0
+# Minimum profit required to execute (after fees)
+min_profit_sol = 0.001
+
+[sizing]
+# Don't take more than X% of pool liquidity per trade
+max_pool_liquidity_percent = 2.0
+
+[slippage]
+# Slippage tolerance in basis points (100 = 1%)
+buy_slippage_bps = 100
+sell_slippage_bps = 100
+# Higher slippage for emergency sells
+emergency_slippage_bps = 1000
+
+[fees]
+# Priority fee in lamports
+base_priority_lamports = 10000
+# Jito/Astralane tip in lamports (min 10000)
+jito_tip_lamports = 10000
+
+[retry]
+# Number of retry attempts if tx fails to land
+max_retries = 3
+# Multiply tip by this on each retry
+tip_multiplier = 1.5
+# Maximum tip (won't exceed this)
+max_tip_lamports = 100000
+# Delay between retries in ms
+retry_delay_ms = 200
+
+[safety]
+# Trigger emergency sell if any pool price drops by this %
+emergency_drop_percent = 50.0
+# How often to check for opportunities (ms)
+check_interval_ms = 100
+# Cooldown after each trade in milliseconds (prevents double-spending)
+trade_cooldown_ms = 3000
+
+# Transaction submission mode: "astralane" or "jito"
+# - astralane: Uses Astralane's MEV-protected endpoint (requires API key)
+# - jito: Uses Jito bundles (no API key needed, but may hit rate limits without UUID)
+transaction_mode = "astralane"
+
+[astralane]
+# Astralane endpoint (Amsterdam recommended)
+endpoint = "https://ams.gateway.astralane.io/iris"
+# Your Astralane API key
+api_key = "YOUR_API_KEY"
+# Tip wallet addresses (randomly selected for each transaction)
+tip_wallets = [
+    "astra4uejePWneqNaJKuFFA8oonqCE1sqF6b45kDMZm",
+]
+# Address Lookup Table for transaction size optimization (optional)
+# Required for PumpSwap + DLMM arbitrage (too many accounts without ALT)
+lookup_table = ""
+
+[jito]
+# Protocol to use: "rest" or "grpc"
+# - rest: Uses REST API (simpler, works with UUID for auth)
+# - grpc: Uses gRPC (official Jito SDK protocol, supports auth keypair)
+protocol = "rest"
+
+# Jito UUID for authenticated REST access (optional, avoids rate limits)
+# Get one from: https://web.jito.wtf/
+# Only used with REST protocol
+uuid = ""
+
+# Path to auth keypair for gRPC authentication (optional)
+# Only used with gRPC protocol
+# Example: "~/.config/solana/jito-auth.json"
+auth_keypair_path = ""
+
+# Custom tip account (optional, uses random Jito tip account if empty)
+tip_account = ""
+
+# Send to all Jito endpoints in parallel (recommended if no UUID/auth)
+# This increases landing rate but uses more bandwidth
+parallel_send = true
+
+# Jito block engine endpoints
+# All 9 mainnet endpoints for maximum coverage:
+endpoints = [
+    "https://mainnet.block-engine.jito.wtf",
+    "https://amsterdam.mainnet.block-engine.jito.wtf",
+    "https://frankfurt.mainnet.block-engine.jito.wtf",
+    "https://ny.mainnet.block-engine.jito.wtf",
+    "https://tokyo.mainnet.block-engine.jito.wtf",
+    "https://slc.mainnet.block-engine.jito.wtf",
+    "https://singapore.mainnet.block-engine.jito.wtf",
+    "https://london.mainnet.block-engine.jito.wtf",
+    "https://dublin.mainnet.block-engine.jito.wtf",
+]
+
+[grpc]
+# Yellowstone gRPC endpoint for real-time updates (fastest option)
+# Leave empty to use WebSocket or RPC polling instead
+# Examples:
+#   Triton: "https://ams17.rpcpool.com:443"
+#   Chainstack: "https://solana-mainnet.core.chainstack.com:443"
+#   Helius: "https://mainnet.helius-rpc.com:443"
+endpoint = ""
+# Authentication token (x-token header)
+x_token = ""
+# Auto-reconnect on connection loss
+reconnect_enabled = true
+# Maximum reconnection attempts before giving up
+max_reconnect_attempts = 10
+# WebSocket endpoint (alternative to gRPC, uses accountSubscribe with processed commitment)
+# Used when gRPC endpoint is empty. Most RPC providers support WebSocket.
+# Examples:
+#   Shyft: "wss://rpc.shyft.to?api_key=YOUR_KEY"
+#   Helius: "wss://mainnet.helius-rpc.com/?api-key=YOUR_KEY"
+#   QuickNode: "wss://YOUR_ENDPOINT.solana-mainnet.quiknode.pro/YOUR_KEY"
+ws_endpoint = ""
+
+[logging]
+# Trade history log file
+trade_log_path = "logs/trades.jsonl"
+# Session state file (for crash recovery)
+session_path = "logs/session.json"
+# Log level: trace, debug, info, warn, error
+log_level = "info"

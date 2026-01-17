@@ -1,0 +1,65 @@
+[package]
+name = "solana-arb-bot"
+version = "0.1.0"
+edition = "2021"
+description = "Solana arbitrage bot for PumpSwap, Meteora DLMM/DAMM V2, and Raydium CPMM pools"
+
+[dependencies]
+# Solana 2.1 (compatible with yellowstone-grpc 10.x)
+solana-sdk = "2.1"
+solana-client = "2.1"
+# Use newer spl-token versions that support zeroize 1.7+
+spl-token = "7"
+spl-associated-token-account = "6"
+
+# Async
+tokio = { version = "1", features = ["full", "sync"] }
+async-trait = "0.1"
+
+# HTTP client (for Astralane and Jito REST)
+reqwest = { version = "0.12", features = ["json"] }
+
+# CLI & TUI
+clap = { version = "4", features = ["derive"] }
+ratatui = "0.28"
+crossterm = "0.28"
+
+# Config & Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+base64 = "0.22"
+bincode = "1"
+bytemuck = { version = "1", features = ["derive"] }
+prost = "0.12"
+prost-types = "0.12"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Utils
+anyhow = "1"
+thiserror = "2"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
+lazy_static = "1"
+shellexpand = "3"
+bs58 = "0.5"
+
+# gRPC (Yellowstone)
+yellowstone-grpc-client = "10.1"
+yellowstone-grpc-proto = "10.1"
+tonic = { version = "0.11", features = ["tls", "tls-roots"] }
+futures = "0.3"
+futures-util = "0.3"
+
+# WebSocket (alternative to gRPC)
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+
+[build-dependencies]
+tonic-build = "0.10"
+
+[[bin]]
+name = "arb-bot"
+path = "src/main.rs"
